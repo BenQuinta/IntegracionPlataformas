@@ -7,13 +7,13 @@ public class Productos {
     private Long id;
     private String nombre;
     private String marca;
-    private int stock;
+    private Integer stock;
     private String modelo;
-    private List<Producto> precio;
+    private List<Precio> precio;
 
     public Productos() {
     }
-    public Productos(Long id, String nombre, String marca, int stock, String modelo, List<Producto> precio) {
+    public Productos(Long id, String nombre, String marca, Integer stock, String modelo, List<Precio> precio) {
         this.id = id;
         this.nombre = nombre;
         this.marca = marca;
@@ -39,10 +39,10 @@ public class Productos {
     public void setMarca(String marca) {
         this.marca = marca;
     }
-    public int getStock() {
+    public Integer getStock() {
         return stock;
     }
-    public void setStock(int stock) {
+    public void setStock(Integer stock) {
         this.stock = stock;
     }
     public String getModelo() {
@@ -51,10 +51,10 @@ public class Productos {
     public void setModelo(String modelo) {
         this.modelo = modelo;
     }
-    public List<Producto> getPrecio() {
+    public List<Precio> getPrecio() {
         return precio;
     }
-    public void setPrecio(List<Producto> precio) {
+    public void setPrecio(List<Precio> precio) {
         this.precio = precio;
         
     }

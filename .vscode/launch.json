@@ -9,6 +9,16 @@
             "projectName": "miprimeraapi",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ConexionbbddApplication<conexionbbdd>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "cl.duoc.conexionbbdd.ConexionbbddApplication",
+            "projectName": "conexionbbdd",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

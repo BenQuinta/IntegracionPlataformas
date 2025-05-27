@@ -1,20 +1,20 @@
-package main.java.cl.duoc.miprimeraapi.model;
+package cl.duoc.miprimeraapi.model;
 
-import java.time.localDateTime;
+import java.time.LocalDateTime;
 public class Precio {
-    private localDateTime fecha;
+    private LocalDateTime fecha;
     private double valor;
 
     public Precio() {
     }
-    public Precio(localDateTime fecha, double valor) {
+    public Precio(LocalDateTime fecha, double valor) {
         this.fecha = fecha;
         this.valor = valor;
     }
-    public localDateTime getFecha() {
+    public LocalDateTime getFecha() {
         return fecha;
     }
-    public void setFecha(localDateTime fecha) {
+    public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
     }
     public double getValor() {
