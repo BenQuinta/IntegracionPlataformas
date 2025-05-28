@@ -102,6 +102,11 @@ public class ProductosController {
                 && !productoRequest.getModelo().isBlank()) {
             productData.setModelo(productoRequest.getModelo());
         }
+        // Solo se actualiza la categoría si viene en la solicitud y no está vacía
+        if (productoRequest.getCategoria() != null && !productoRequest.getCategoria().isEmpty()
+                && !productoRequest.getCategoria().isBlank()) {
+            productData.setCategoria(productoRequest.getCategoria());
+        }
         // Solo se actualiza el precio si viene en la solicitud y no está vacío
         if (productoRequest.getPrecio() != null && !productoRequest.getPrecio().isEmpty()) {
             productData.setPrecio(productoRequest.getPrecio());
