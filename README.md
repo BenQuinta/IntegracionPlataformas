@@ -21,12 +21,14 @@ Controlador para la gestión CRUD de productos.
 
 **Endpoints:**
 
-- `POST /productos` — Crear un nuevo producto.  
-- `GET /productos/{id}` — Obtener un producto por su ID.  
-- `GET /productos` — Listar todos los productos.  
-- `PUT /productos/{id}` — Actualizar un producto existente.  
-- `DELETE /productos/{id}` — Eliminar un producto por ID.  
-- `GET /productos/sucursal/{sucursalId}` — Listar productos de una sucursal específica.
+- `GET /productos/{id}` — Obtiene un producto por su ID.
+- `POST /productos` — Crea un nuevo producto.
+- `DELETE /productos/{id}` — Elimina un producto por su ID.
+- `PUT /productos/{id}` — Actualiza un producto existente.
+- `GET /productos/categoria/{categoria}` — Lista productos por categoría.
+- `GET /productos/codigo/{codigoProducto}` — Busca un producto por su código.
+- `GET /productos/nombre/{nombre}` — Busca productos que contengan el nombre indicado.
+- `GET /productos/stock/menor/{valor}` — Lista productos con stock menor al valor indicado.
 
 **SucursalController**
 Controlador para la administración de sucursales.
