@@ -5,7 +5,7 @@ Proyecto para integracion de plataformas para la empresa ferremas el cual tiene 
 - **Lenguaje:** Java  
 - **Framework:** Spring Boot  
 - **Base de datos:** MySQL  
-- **Herramientas adicionales:**Postman
+- **Herramientas adicionales:** Postman
 ## Controladores REST
 **MindicadorController**
 Controlador que consume la api externa de [mindicador.cl] (https://mindicador.cl) para obtener indicadores económicos y realizar conversiones de moneda.
@@ -55,13 +55,6 @@ Controlador que consume la API de [mindicador.cl](https://mindicador.cl) para ob
 
 # Clonar el repositorio
 git clone https://github.com/BenQuinta/IntegracionPlataformas.git
-
-# Ingresar al proyecto
-cd IntegracionPlataformas
-
-# Instalar dependencias y compilar
-mvn clean install
-
 # Ejecutar el proyecto
 mvn spring-boot:run
 
