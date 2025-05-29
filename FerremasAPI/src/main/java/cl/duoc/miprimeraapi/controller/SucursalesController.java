@@ -5,24 +5,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cl.duoc.miprimeraapi.model.Sucursales;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import cl.duoc.miprimeraapi.model.Sucursales;
 @RestController
+@RequestMapping("/sucursales")
 public class SucursalesController {
-    private Map<Long, Sucursales> data = new HashMap<Long, Sucursales>();
+
+    private Map<Long, Sucursales> data = new HashMap<>();
     private Long contadorId = 0L;
 
-    @GetMapping("sucursales/{id}")
+    // 👇 Sucursal precargada para que funcione GET /sucursales/1
+    public SucursalesController() {
+        Sucursales sucursalInicial = new Sucursales();
+        sucursalInicial.setNombreSucursal("Sucursal Central");
+        sucursalInicial.setDireccion("Av. Principal 123");
+        sucursalInicial.setId(++contadorId);
+        data.put(contadorId, sucursalInicial);
+    }
+
+    @GetMapping("/{id}")
     public ResponseEntity<Sucursales> getSucursales(@PathVariable Long id) {
         Sucursales sucursalData = data.get(id);
         if (sucursalData == null) {
@@ -31,22 +35,21 @@ public class SucursalesController {
         return new ResponseEntity<>(sucursalData, HttpStatus.OK);
     }
 
-    @PostMapping("sucursales")
+    @PostMapping
     public ResponseEntity<Sucursales> postSucursales(@RequestBody Sucursales sucursal) {
         sucursal.setId(++contadorId);
         data.put(contadorId, sucursal);
         return new ResponseEntity<>(data.get(contadorId), HttpStatus.CREATED);
     }
 
-    @GetMapping("sucursales")
+    @GetMapping
     public ResponseEntity<List<Sucursales>> getTodosSucursales() {
-        List<Sucursales> response = new ArrayList<Sucursales>(data.values());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(new ArrayList<>(data.values()), HttpStatus.OK);
     }
-    @PutMapping("sucursales/{id}")
+
+    @PutMapping("/{id}")
     public ResponseEntity<Sucursales> putSucursales(@PathVariable Long id, @RequestBody Sucursales sucursalRequest) {
-        Sucursales sucursalData = data.get(id);
-        if (sucursalData == null) {
+        if (!data.containsKey(id)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         sucursalRequest.setId(id);
@@ -54,26 +57,25 @@ public class SucursalesController {
         return new ResponseEntity<>(data.get(id), HttpStatus.OK);
     }
 
-    @PatchMapping("sucursales/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<Sucursales> patchSucursales(@PathVariable Long id, @RequestBody Sucursales sucursalRequest) {
-        Sucursales sucursalData = data.get(id);
-        if (sucursalData == null) {
+        Sucursales existente = data.get(id);
+        if (existente == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         if (sucursalRequest.getNombreSucursal() != null) {
-            sucursalData.setNombreSucursal(sucursalRequest.getNombreSucursal());
+            existente.setNombreSucursal(sucursalRequest.getNombreSucursal());
         }
         if (sucursalRequest.getDireccion() != null) {
-            sucursalData.setDireccion(sucursalRequest.getDireccion());
+            existente.setDireccion(sucursalRequest.getDireccion());
         }
-        data.put(id, sucursalData);
-        return new ResponseEntity<>(data.get(id), HttpStatus.OK);
+        data.put(id, existente);
+        return new ResponseEntity<>(existente, HttpStatus.OK);
     }
 
-    @DeleteMapping("sucursales/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSucursales(@PathVariable Long id) {
-        Sucursales sucursalData = data.remove(id);
-        if (sucursalData == null) {
+        if (data.remove(id) == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
