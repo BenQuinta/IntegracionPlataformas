@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ferremas</title>
+  <style>
+    body {
+      background-color: #f4f4f4;
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .busqueda {
+      margin: 10px 0;
+    }
+
+    input[type="text"], input[type="number"] {
+      padding: 8px;
+      width: 250px;
+      margin-right: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 8px 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .producto {
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 15px;
+      margin: 20px auto;
+      max-width: 500px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .producto p {
+      margin: 5px 0;
+    }
+
+    .precio-convertido {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>FERREMAS</h1>
+
+  <div class="busqueda">
+    <input type="text" id="codigoInput" placeholder="Buscar por código" />
+    <button onclick="buscarPorCodigo()">Buscar</button>
+  </div>
+
+  <div class="busqueda">
+    <input type="text" id="nombreInput" placeholder="Buscar por nombre" />
+    <button onclick="buscarPorNombre()">Buscar</button>
+  </div>
+
+  <div class="busqueda">
+    <input type="text" id="categoriaInput" placeholder="Buscar por categoría" />
+    <button onclick="buscarPorCategoria()">Buscar</button>
+  </div>
+
+  <div class="busqueda">
+    <input type="number" id="stockInput" placeholder="Stock menor a..." />
+    <button onclick="buscarPorStock()">Buscar</button>
+  </div>
+
+  <div id="producto-container"></div>
+  <div class="precio-convertido" id="precio-convertido"></div>
+
+  <script>
+    function buscarPorCodigo() {
+      const codigo = document.getElementById("codigoInput").value;
+      fetch(`/productos/codigo/${codigo}`)
+        .then(res => res.json())
+        .then(producto => mostrarProducto(producto))
+        .catch(() => alert("Producto no encontrado"));
+    }
+
+    function buscarPorNombre() {
+      const nombre = document.getElementById("nombreInput").value;
+      fetch(`/productos/nombre/${nombre}`)
+        .then(res => res.json())
+        .then(lista => mostrarProductos(lista))
+        .catch(() => alert("No se encontraron productos"));
+    }
+
+    function buscarPorCategoria() {
+      const cat = document.getElementById("categoriaInput").value;
+      fetch(`/productos/categoria/${cat}`)
+        .then(res => res.json())
+        .then(lista => mostrarProductos(lista))
+        .catch(() => alert("No se encontraron productos"));
+    }
+
+    function buscarPorStock() {
+      const valor = document.getElementById("stockInput").value;
+      fetch(`/productos/stock?valor=${valor}`)
+        .then(res => res.json())
+        .then(lista => mostrarProductos(lista))
+        .catch(() => alert("No se encontraron productos con bajo stock"));
+    }
+
+    function mostrarProducto(p) {
+      const container = document.getElementById("producto-container");
+      const precioId = p.precios[0]?.id ?? null;
+
+      container.innerHTML = `
+        <div class="producto">
+          <h2>${p.nombre}</h2>
+          <p><strong>Código:</strong> ${p.codigoProducto}</p>
+          <p><strong>Marca:</strong> ${p.marca}</p>
+          <p><strong>Modelo:</strong> ${p.modelo}</p>
+          <p><strong>Stock:</strong> ${p.stock}</p>
+          <p><strong>Categoría:</strong> ${p.categoria}</p>
+          <p><strong>Precio CLP:</strong> $${p.precios[0]?.valor ?? 'N/A'}</p>
+          ${precioId ? `
+            <button onclick="convertirPrecio(${precioId}, 'USD')">Convertir a USD</button>
+            <button onclick="convertirPrecio(${precioId}, 'EUR')">Convertir a EUR</button>
+          ` : '<p style="color:red;">Sin precio asociado</p>'}
+        </div>
+      `;
+      document.getElementById("precio-convertido").innerHTML = "";
+    }
+
+    function mostrarProductos(lista) {
+      const container = document.getElementById("producto-container");
+      container.innerHTML = lista.map(p => {
+        const precioId = p.precios[0]?.id ?? null;
+        return `
+          <div class="producto">
+            <h2>${p.nombre}</h2>
+            <p><strong>Código:</strong> ${p.codigoProducto}</p>
+            <p><strong>Marca:</strong> ${p.marca}</p>
+            <p><strong>Modelo:</strong> ${p.modelo}</p>
+            <p><strong>Stock:</strong> ${p.stock}</p>
+            <p><strong>Categoría:</strong> ${p.categoria}</p>
+            <p><strong>Precio CLP:</strong> $${p.precios[0]?.valor ?? 'N/A'}</p>
+            ${precioId ? `
+              <button onclick="convertirPrecio(${precioId}, 'USD')">Convertir a USD</button>
+              <button onclick="convertirPrecio(${precioId}, 'EUR')">Convertir a EUR</button>
+            ` : '<p style="color:red;">Sin precio asociado</p>'}
+          </div>
+        `;
+      }).join('');
+      document.getElementById("precio-convertido").innerHTML = "";
+    }
+
+    function convertirPrecio(id, moneda) {
+      fetch(`/precios/convertir/${id}/${moneda}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Error");
+          return res.json();
+        })
+        .then(data => {
+          document.getElementById("precio-convertido").innerHTML = `
+            <p>💱 Precio en ${moneda}: <strong>${data.valorConvertido.toFixed(2)} ${moneda}</strong></p>
+          `;
+        })
+        .catch(() => {
+          document.getElementById("precio-convertido").innerHTML = `<p style="color:red;">Error al convertir el precio.</p>`;
+        });
+    }
+  </script>
+</body>
+</html>
