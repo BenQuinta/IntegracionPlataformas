@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pago exitoso</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e9ffe9;
+      text-align: center;
+      padding-top: 100px;
+    }
+    h1 {
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <h1>✅ ¡Pago exitoso!</h1>
+  <p>Gracias por tu compra.</p>
+  <p>Orden: <span id="orden">Cargando...</span></p>
+  <p>Monto: $<span id="monto">Cargando...</span></p>
+  <a href="/">Volver al inicio</a>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const orden = params.get('orden');
+    const monto = params.get('monto');
+
+    document.getElementById('orden').textContent = orden || 'N/A';
+    document.getElementById('monto').textContent = monto ? monto : 'N/A';
+  </script>
+</body>
+</html>
