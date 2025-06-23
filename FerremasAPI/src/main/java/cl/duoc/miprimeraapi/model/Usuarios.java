@@ -2,6 +2,8 @@ package cl.duoc.miprimeraapi.model;
 
 import jakarta.persistence.*;
 
+@Entity
+@Table(name = "usuarios")
 public class Usuarios {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
