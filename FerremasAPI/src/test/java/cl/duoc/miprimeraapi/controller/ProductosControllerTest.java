@@ -4,10 +4,9 @@ import cl.duoc.miprimeraapi.model.Productos;
 import cl.duoc.miprimeraapi.repository.ProductosRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.ResponseEntity;
 
 import java.lang.reflect.Field;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -31,6 +30,7 @@ public class ProductosControllerTest {
     void testObtenerProductoPorIdExistente() {
         Productos producto = new Productos();
         producto.setId(1L);
+        producto.setNombre("Martillo");
 
         when(productosRepository.findById(1L)).thenReturn(Optional.of(producto));
 
@@ -38,16 +38,84 @@ public class ProductosControllerTest {
 
         assertTrue(resultado.isPresent());
         assertEquals(1L, resultado.get().getId());
-        verify(productosRepository).findById(1L);
+        assertEquals("Martillo", resultado.get().getNombre());
     }
 
     @Test
-    void testObtenerProductoPorIdInexistente() {
-        when(productosRepository.findById(2L)).thenReturn(Optional.empty());
+    void testObtenerTodosLosProductos() {
+        Productos p1 = new Productos();
+        p1.setId(1L);
+        p1.setNombre("Martillo");
 
-        Optional<Productos> resultado = controller.obtenerPorId(2L);
+        Productos p2 = new Productos();
+        p2.setId(2L);
+        p2.setNombre("Taladro");
 
-        assertTrue(resultado.isEmpty());
-        verify(productosRepository).findById(2L);
+        List<Productos> productos = Arrays.asList(p1, p2);
+
+        when(productosRepository.findAll()).thenReturn(productos);
+
+        List<Productos> resultado = controller.obtenerTodos();
+
+        assertEquals(2, resultado.size());
+        assertEquals("Martillo", resultado.get(0).getNombre());
+        assertEquals("Taladro", resultado.get(1).getNombre());
+    }
+
+    @Test
+    void testCrearProducto() {
+        Productos nuevo = new Productos();
+        nuevo.setNombre("Sierra");
+
+        Productos guardado = new Productos();
+        guardado.setId(3L);
+        guardado.setNombre("Sierra");
+
+        when(productosRepository.save(nuevo)).thenReturn(guardado);
+
+        Productos resultado = controller.crearProducto(nuevo);
+
+        assertNotNull(resultado);
+        assertEquals(3L, resultado.getId());
+        assertEquals("Sierra", resultado.getNombre());
+    }
+
+    @Test
+    void testEliminarProducto() {
+        doNothing().when(productosRepository).deleteById(4L);
+
+        assertDoesNotThrow(() -> controller.eliminarProducto(4L));
+        verify(productosRepository).deleteById(4L);
+    }
+
+    @Test
+    void testBuscarPorCategoria() {
+        Productos producto = new Productos();
+        producto.setNombre("Martillo");
+        producto.setCategoria("Herramientas");
+
+        List<Productos> lista = Collections.singletonList(producto);
+
+        when(productosRepository.findByCategoria("Herramientas")).thenReturn(lista);
+
+        List<Productos> resultado = controller.obtenerPorCategoria("Herramientas");
+
+        assertEquals(1, resultado.size());
+        assertEquals("Martillo", resultado.get(0).getNombre());
+    }
+
+    @Test
+    void testBuscarPorNombre() {
+        Productos producto = new Productos();
+        producto.setNombre("Taladro Eléctrico");
+
+        List<Productos> lista = Collections.singletonList(producto);
+
+        when(productosRepository.findByNombreContainingIgnoreCase("taladro")).thenReturn(lista);
+
+        List<Productos> resultado = controller.buscarPorNombre("taladro");
+
+        assertEquals(1, resultado.size());
+        assertTrue(resultado.get(0).getNombre().toLowerCase().contains("taladro"));
     }
 }
