@@ -31,7 +31,6 @@ public PrecioConvertidoDTO convertirPrecio(@PathVariable Long id, @PathVariable 
     @Autowired
     private ProductosRepository productosRepository;
 
-    
     @GetMapping("/fecha/{fecha}")
     public List<Precio> buscarPorFecha(@PathVariable String fecha) {
         return precioRepository.findByFecha(LocalDateTime.parse(fecha));

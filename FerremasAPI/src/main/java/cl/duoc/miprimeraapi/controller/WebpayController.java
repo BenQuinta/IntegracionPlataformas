@@ -45,7 +45,6 @@ public class WebpayController {
             response.getBuyOrder(),
             response.getAmount()
         );
-
         return ResponseEntity.status(HttpStatus.FOUND)
                              .header("Location", redirectUrl)
                              .build();

@@ -210,7 +210,6 @@
       }).join('');
       document.getElementById("precio-convertido").innerHTML = "";
     }
-
     function convertirPrecio(id, moneda) {
       fetch(`/precios/convertir/${id}/${moneda}`)
         .then(res => {
