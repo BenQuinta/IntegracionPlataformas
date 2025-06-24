@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Ferremas - Tienda</title>
+  <title>Ferremas - Productos</title>
   <style>
     body {
       background-color: #f4f4f4;
@@ -10,12 +10,15 @@
       margin: 20px;
       text-align: center;
     }
+
     h1 {
       color: #333;
     }
+
     .busqueda {
       margin: 10px 0;
     }
+
     input[type="text"], input[type="number"] {
       padding: 8px;
       width: 250px;
@@ -23,60 +26,68 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
+
     button {
       padding: 8px 12px;
+      margin: 5px;
       background-color: #007bff;
       color: white;
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      margin: 3px 5px 3px 0;
     }
+
     button:hover {
       background-color: #0056b3;
     }
-    .producto, .carrito-producto {
+
+    .producto {
       background-color: white;
       border: 1px solid #ddd;
       border-radius: 6px;
       padding: 15px;
-      margin: 10px auto;
+      margin: 20px auto;
       max-width: 500px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      text-align: left;
     }
-    .producto p, .carrito-producto p {
+
+    .producto p {
       margin: 5px 0;
     }
-    #producto-container, #carrito-container {
-      max-width: 520px;
-      margin: 0 auto 40px;
+
+    .acciones {
+      margin-top: 30px;
     }
-    #carrito-container {
-      border: 2px solid #007bff;
-      border-radius: 8px;
-      padding: 10px;
-      background: #e9f0ff;
-    }
-    #carrito-container h2 {
-      margin-top: 0;
-    }
+
     .precio-convertido {
       margin-top: 20px;
       font-weight: bold;
     }
-    .flex-row {
+
+    .top-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 20px;
     }
-    .text-right {
-      text-align: right;
+
+    .top-bar button {
+      background-color: #dc3545;
+    }
+
+    .top-bar button:hover {
+      background-color: #c82333;
     }
   </style>
 </head>
 <body>
-  <h1>FERREMAS - Tienda</h1>
+  <div class="top-bar">
+    <h1>FERREMAS</h1>
+    <div>
+      <button onclick="cerrarSesion()">Cerrar Sesión</button>
+      <button onclick="irAlCarrito()">🛒 Ver Carrito</button>
+    </div>
+  </div>
 
   <div class="busqueda">
     <input type="text" id="codigoInput" placeholder="Buscar por código" />
@@ -99,154 +110,64 @@
   </div>
 
   <div id="producto-container"></div>
-
-  <h2>Carrito de Compras</h2>
-  <div id="carrito-container">
-    <p id="carrito-vacio">No hay productos en el carrito.</p>
-    <div id="carrito-productos"></div>
-    <p class="text-right" id="total-carrito"></p>
-    <button id="btn-pagar" onclick="pagarCarrito()" style="display:none;">Pagar todo con Webpay</button>
-  </div>
-
   <div class="precio-convertido" id="precio-convertido"></div>
 
-<script>
-  // Carrito almacenado en localStorage
-  let carrito = JSON.parse(localStorage.getItem('carritoFerremas')) || [];
-
-  function guardarCarrito() {
-    localStorage.setItem('carritoFerremas', JSON.stringify(carrito));
-  }
-
-  function actualizarCarrito() {
-    const contenedor = document.getElementById('carrito-productos');
-    const vacioMsg = document.getElementById('carrito-vacio');
-    const totalElem = document.getElementById('total-carrito');
-    const btnPagar = document.getElementById('btn-pagar');
-
-    if (carrito.length === 0) {
-      contenedor.innerHTML = '';
-      vacioMsg.style.display = 'block';
-      totalElem.textContent = '';
-      btnPagar.style.display = 'none';
-      return;
+  <script>
+    // Validar sesión
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    if (!usuario) {
+      alert("Debes iniciar sesión primero.");
+      window.location.href = "login.html";
     }
 
-    vacioMsg.style.display = 'none';
-    btnPagar.style.display = 'inline-block';
-
-    contenedor.innerHTML = carrito.map((item, idx) => `
-      <div class="carrito-producto flex-row" >
-        <div>
-          <strong>${item.nombre}</strong><br>
-          Precio: $${item.precio.toFixed(0)}<br>
-          Cantidad: <input type="number" min="1" value="${item.cantidad}" onchange="cambiarCantidad(${idx}, this.value)" style="width:50px;">
-        </div>
-        <div class="text-right">
-          <button onclick="eliminarProducto(${idx})" style="background-color:#dc3545;">Eliminar</button>
-          <p><strong>Subtotal:</strong> $${(item.precio * item.cantidad).toFixed(0)}</p>
-        </div>
-      </div>
-    `).join('');
-
-    const total = carrito.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
-    totalElem.textContent = `Total: $${total.toFixed(0)}`;
-  }
-
-  function agregarAlCarrito(producto) {
-    // Verifica si ya existe, suma cantidades
-    const index = carrito.findIndex(p => p.codigoProducto === producto.codigoProducto);
-    if (index >= 0) {
-      carrito[index].cantidad++;
-    } else {
-      carrito.push({...producto, cantidad: 1});
+    function cerrarSesion() {
+      localStorage.removeItem("usuario");
+      localStorage.removeItem("carrito");
+      window.location.href = "login.html";
     }
-    guardarCarrito();
-    actualizarCarrito();
-    alert(`Producto "${producto.nombre}" agregado al carrito.`);
-  }
 
-  function cambiarCantidad(index, cantidad) {
-    cantidad = parseInt(cantidad);
-    if (cantidad < 1) cantidad = 1;
-    carrito[index].cantidad = cantidad;
-    guardarCarrito();
-    actualizarCarrito();
-  }
+    function irAlCarrito() {
+      window.location.href = "carrito.html";
+    }
 
-  function eliminarProducto(index) {
-    carrito.splice(index, 1);
-    guardarCarrito();
-    actualizarCarrito();
-  }
+    function buscarPorCodigo() {
+      const codigo = document.getElementById("codigoInput").value;
+      fetch(`/productos/codigo/${codigo}`)
+        .then(res => res.json())
+        .then(producto => mostrarProducto(producto))
+        .catch(() => alert("Producto no encontrado"));
+    }
 
-  // Funciones de búsqueda y mostrar productos (igual que antes pero con botón agregar al carrito)
-  function buscarPorCodigo() {
-    const codigo = document.getElementById("codigoInput").value;
-    if (!codigo) return alert('Ingrese un código');
-    fetch(`/productos/codigo/${codigo}`)
-      .then(res => res.json())
-      .then(producto => mostrarProducto(producto))
-      .catch(() => alert("Producto no encontrado"));
-  }
+    function buscarPorNombre() {
+      const nombre = document.getElementById("nombreInput").value;
+      fetch(`/productos/nombre/${nombre}`)
+        .then(res => res.json())
+        .then(lista => mostrarProductos(lista))
+        .catch(() => alert("No se encontraron productos"));
+    }
 
-  function buscarPorNombre() {
-    const nombre = document.getElementById("nombreInput").value;
-    if (!nombre) return alert('Ingrese un nombre');
-    fetch(`/productos/nombre/${nombre}`)
-      .then(res => res.json())
-      .then(lista => mostrarProductos(lista))
-      .catch(() => alert("No se encontraron productos"));
-  }
+    function buscarPorCategoria() {
+      const cat = document.getElementById("categoriaInput").value;
+      fetch(`/productos/categoria/${cat}`)
+        .then(res => res.json())
+        .then(lista => mostrarProductos(lista))
+        .catch(() => alert("No se encontraron productos"));
+    }
 
-  function buscarPorCategoria() {
-    const cat = document.getElementById("categoriaInput").value;
-    if (!cat) return alert('Ingrese una categoría');
-    fetch(`/productos/categoria/${cat}`)
-      .then(res => res.json())
-      .then(lista => mostrarProductos(lista))
-      .catch(() => alert("No se encontraron productos"));
-  }
+    function buscarPorStock() {
+      const valor = document.getElementById("stockInput").value;
+      fetch(`/productos/stock?valor=${valor}`)
+        .then(res => res.json())
+        .then(lista => mostrarProductos(lista))
+        .catch(() => alert("No se encontraron productos con bajo stock"));
+    }
 
-  function buscarPorStock() {
-    const valor = document.getElementById("stockInput").value;
-    if (!valor) return alert('Ingrese un valor para stock');
-    fetch(`/productos/stock?valor=${valor}`)
-      .then(res => res.json())
-      .then(lista => mostrarProductos(lista))
-      .catch(() => alert("No se encontraron productos con bajo stock"));
-  }
-
-  function mostrarProducto(p) {
-    const container = document.getElementById("producto-container");
-    const precio = p.precios[0]?.valor ?? 0;
-    const precioId = p.precios[0]?.id ?? null;
-
-    container.innerHTML = `
-      <div class="producto">
-        <h2>${p.nombre}</h2>
-        <p><strong>Código:</strong> ${p.codigoProducto}</p>
-        <p><strong>Marca:</strong> ${p.marca}</p>
-        <p><strong>Modelo:</strong> ${p.modelo}</p>
-        <p><strong>Stock:</strong> ${p.stock}</p>
-        <p><strong>Categoría:</strong> ${p.categoria}</p>
-        <p><strong>Precio CLP:</strong> $${precio}</p>
-        ${precioId ? `
-          <button onclick="convertirPrecio(${precioId}, 'USD')">Convertir a USD</button>
-          <button onclick="convertirPrecio(${precioId}, 'EUR')">Convertir a EUR</button>
-          <button onclick='agregarAlCarrito(${JSON.stringify({...p, precio}).replace(/'/g,"\\'")})'>Agregar al carrito</button>
-        ` : '<p style="color:red;">Sin precio asociado</p>'}
-      </div>
-    `;
-    document.getElementById("precio-convertido").innerHTML = "";
-  }
-
-  function mostrarProductos(lista) {
-    const container = document.getElementById("producto-container");
-    container.innerHTML = lista.map(p => {
+    function mostrarProducto(p) {
+      const container = document.getElementById("producto-container");
       const precio = p.precios[0]?.valor ?? 0;
       const precioId = p.precios[0]?.id ?? null;
-      return `
+
+      container.innerHTML = `
         <div class="producto">
           <h2>${p.nombre}</h2>
           <p><strong>Código:</strong> ${p.codigoProducto}</p>
@@ -258,69 +179,60 @@
           ${precioId ? `
             <button onclick="convertirPrecio(${precioId}, 'USD')">Convertir a USD</button>
             <button onclick="convertirPrecio(${precioId}, 'EUR')">Convertir a EUR</button>
-            <button onclick='agregarAlCarrito(${JSON.stringify({...p, precio}).replace(/'/g,"\\'")})'>Agregar al carrito</button>
+            <button onclick='agregarAlCarrito(${JSON.stringify({ nombre: p.nombre, precio })})'>Agregar al carrito</button>
           ` : '<p style="color:red;">Sin precio asociado</p>'}
         </div>
       `;
-    }).join('');
-    document.getElementById("precio-convertido").innerHTML = "";
-  }
-
-  function convertirPrecio(id, moneda) {
-    fetch(`/precios/convertir/${id}/${moneda}`)
-      .then(res => {
-        if (!res.ok) throw new Error("Error");
-        return res.json();
-      })
-      .then(data => {
-        document.getElementById("precio-convertido").innerHTML = `
-          <p>💱 Precio en ${moneda}: <strong>${data.valorConvertido.toFixed(2)} ${moneda}</strong></p>
-        `;
-      })
-      .catch(() => {
-        document.getElementById("precio-convertido").innerHTML = `<p style="color:red;">Error al convertir el precio.</p>`;
-      });
-  }
-
-  // Función para pagar todos los productos en carrito
-  function pagarCarrito() {
-    if (carrito.length === 0) {
-      alert("El carrito está vacío.");
-      return;
+      document.getElementById("precio-convertido").innerHTML = "";
     }
-    const total = carrito.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
 
-    fetch('/webpay/pagar', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ monto: total })
-    })
-    .then(res => {
-      if (!res.ok) throw new Error("Error al crear transacción");
-      return res.json();
-    })
-    .then(data => {
-      // Redirigir a Webpay con token_ws
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = data.url;
+    function mostrarProductos(lista) {
+      const container = document.getElementById("producto-container");
+      container.innerHTML = lista.map(p => {
+        const precio = p.precios[0]?.valor ?? 0;
+        const precioId = p.precios[0]?.id ?? null;
+        return `
+          <div class="producto">
+            <h2>${p.nombre}</h2>
+            <p><strong>Código:</strong> ${p.codigoProducto}</p>
+            <p><strong>Marca:</strong> ${p.marca}</p>
+            <p><strong>Modelo:</strong> ${p.modelo}</p>
+            <p><strong>Stock:</strong> ${p.stock}</p>
+            <p><strong>Categoría:</strong> ${p.categoria}</p>
+            <p><strong>Precio CLP:</strong> $${precio}</p>
+            ${precioId ? `
+              <button onclick="convertirPrecio(${precioId}, 'USD')">Convertir a USD</button>
+              <button onclick="convertirPrecio(${precioId}, 'EUR')">Convertir a EUR</button>
+              <button onclick='agregarAlCarrito(${JSON.stringify({ nombre: p.nombre, precio })})'>Agregar al carrito</button>
+            ` : '<p style="color:red;">Sin precio asociado</p>'}
+          </div>
+        `;
+      }).join('');
+      document.getElementById("precio-convertido").innerHTML = "";
+    }
 
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = 'token_ws';
-      input.value = data.token;
+    function convertirPrecio(id, moneda) {
+      fetch(`/precios/convertir/${id}/${moneda}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Error");
+          return res.json();
+        })
+        .then(data => {
+          document.getElementById("precio-convertido").innerHTML = `
+            <p>💱 Precio en ${moneda}: <strong>${data.valorConvertido.toFixed(2)} ${moneda}</strong></p>
+          `;
+        })
+        .catch(() => {
+          document.getElementById("precio-convertido").innerHTML = `<p style="color:red;">Error al convertir el precio.</p>`;
+        });
+    }
 
-      form.appendChild(input);
-      document.body.appendChild(form);
-      form.submit();
-    })
-    .catch(err => {
-      alert("Error al iniciar el pago: " + err.message);
-    });
-  }
-
-  // Inicializamos el carrito en carga
-  actualizarCarrito();
-</script>
+    function agregarAlCarrito(producto) {
+      let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+      carrito.push(producto);
+      localStorage.setItem("carrito", JSON.stringify(carrito));
+      alert("Producto agregado al carrito 🛒");
+    }
+  </script>
 </body>
 </html>

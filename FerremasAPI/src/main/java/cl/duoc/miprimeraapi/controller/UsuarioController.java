@@ -73,4 +73,16 @@ public class UsuarioController {
         }
         return ResponseEntity.ok(usuario);
     }
+
+    // Iniciar sesión
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Usuarios datos) {
+        Usuarios usuario = usuarioRepo.findByEmail(datos.getEmail());
+
+        if (usuario != null && usuario.getPassword().equals(datos.getPassword())) {
+            return ResponseEntity.ok(usuario); // Puedes devolver solo el nombre/rol si prefieres
+        } else {
+            return ResponseEntity.status(401).body("Credenciales inválidas");
+        }
+    }
 }
