@@ -69,11 +69,8 @@ public class ProductosController {
         return productosRepository.findByNombreContainingIgnoreCase(nombre);
     }
 
-    
     @GetMapping("/stock/menor/{valor}")
     public List<Productos> productosConBajoStock(@PathVariable int valor) {
         return productosRepository.findByStockLessThan(valor);
     }
-
-    
 }

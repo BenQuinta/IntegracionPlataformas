@@ -9,9 +9,7 @@ public class Precio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private double valor;
-
     private LocalDateTime fecha;
 
     public Precio() {

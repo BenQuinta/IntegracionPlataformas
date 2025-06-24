@@ -25,26 +25,21 @@ public PrecioConvertidoDTO convertirPrecio(@PathVariable Long id, @PathVariable 
     return mindicadorService.convertirPrecio(precio, moneda);
 }
 
-
-
     @Autowired
     private PrecioRepository precioRepository;
 
     @Autowired
     private ProductosRepository productosRepository;
 
-    
     @GetMapping("/fecha/{fecha}")
     public List<Precio> buscarPorFecha(@PathVariable String fecha) {
         return precioRepository.findByFecha(LocalDateTime.parse(fecha));
     }
 
-    
     @GetMapping("/producto/{codigoProducto}")
     public List<Precio> buscarPorProducto(@PathVariable String codigoProducto) {
         return productosRepository.findByCodigoProducto(codigoProducto)
                 .stream().findFirst().map(p -> p.getPrecios()).orElse(List.of());
     }
 
-    
 }

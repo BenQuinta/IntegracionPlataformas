@@ -17,6 +17,7 @@ public class Usuarios {
 
     public Usuarios() {}
 
+    
     public Long getId() {
         return id;
     }

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Carrito de Compras - Ferremas</title>
+  <style>
+    body {
+      background-color: #fafafa;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #333;
+    }
+    .carrito-item {
+      background-color: #fff;
+      margin: 10px auto;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      max-width: 500px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .acciones {
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 10px 15px;
+      margin: 10px;
+      border: none;
+      background-color: #28a745;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    .volver {
+      background-color: #007bff;
+    }
+
+    .volver:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>🛒 Carrito de Compras</h1>
+
+  <div id="carrito-container"></div>
+
+  <div class="acciones">
+    <button onclick="pagar()">Pagar con Webpay</button>
+    <button class="volver" onclick="window.location.href='index.html'">Volver al catálogo</button>
+  </div>
+
+  <script>
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    if (!usuario) {
+      alert("Debes iniciar sesión primero.");
+      window.location.href = "login.html";
+    }
+
+    const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+    function renderCarrito() {
+      const contenedor = document.getElementById("carrito-container");
+
+      if (carrito.length === 0) {
+        contenedor.innerHTML = "<p>El carrito está vacío.</p>";
+        return;
+      }
+
+      const total = carrito.reduce((sum, item) => sum + item.precio, 0);
+
+      contenedor.innerHTML = carrito.map((item, i) => `
+        <div class="carrito-item">
+          <strong>${item.nombre}</strong> - $${item.precio}
+        </div>
+      `).join('') + `<p><strong>Total a pagar:</strong> $${total}</p>`;
+    }
+
+    function pagar() {
+      const total = carrito.reduce((sum, item) => sum + item.precio, 0);
+      if (total === 0) {
+        alert("Tu carrito está vacío.");
+        return;
+      }
+
+      fetch('/webpay/pagar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ monto: total })
+      })
+      .then(res => res.json())
+      .then(data => {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = data.url;
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'token_ws';
+        input.value = data.token;
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+      })
+      .catch(err => {
+        alert("Error al iniciar el pago.");
+        console.error(err);
+      });
+    }
+
+    renderCarrito();
+  </script>
+</body>
+</html>

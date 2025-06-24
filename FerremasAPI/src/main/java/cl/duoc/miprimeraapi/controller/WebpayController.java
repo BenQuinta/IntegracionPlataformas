@@ -45,11 +45,9 @@ public class WebpayController {
             response.getBuyOrder(),
             response.getAmount()
         );
-
         return ResponseEntity.status(HttpStatus.FOUND)
                              .header("Location", redirectUrl)
                              .build();
-
     } catch (Exception e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                              .body(Map.of("error", e.getMessage()));
