@@ -57,26 +57,26 @@ Controlador que consume la API de [mindicador.cl](https://mindicador.cl) para ob
 git clone https://github.com/BenQuinta/IntegracionPlataformas.git
 
 # Ocupar MySQL Configurator
--Ocupar las credenciales:
--nombre db: ferremasdb 
--password: prueba2103
+- Ocupar las credenciales:
+- nombre db: ferremasdb 
+- password: prueba2103
 
 # Conectarse a MySQL Workbench
--Ingresar con las credenciales:
--nombre db: ferremasdb 
--username: root
--password: prueba2103
+- Ingresar con las credenciales:
+- nombre db: ferremasdb 
+- username: root
+- password: prueba2103
 
 # Iniciar Proyecto con Springboot
--Tener instalado la extension de springboot dentro de VScode
--Inicar proyecto, ya con la base de datos conectada.
--Automaticamente se crearan las tablas
+- Tener instalado la extension de springboot dentro de VScode
+- Inicar proyecto, ya con la base de datos conectada.
+- Automaticamente se crearan las tablas
 
 # Uso de postman
 Instalar la coleccion de postman para poder hacer uso de los crud, para ingresar datos tales como usuarios, sucursales, productos
 
 # Datos de tarjeta de prueba WebPay
--Ocupar el numero de tarjeta:
--fecha de vencimiento: fecha mayor a la actual
--rut: 11.111.111-1
--contraseña: 123
+- Ocupar el numero de tarjeta:
+- fecha de vencimiento: fecha mayor a la actual
+- rut: 11.111.111-1
+- contraseña: 123
